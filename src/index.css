@@ -1,0 +1,140 @@
+@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+
+/* GLOBAL RESET */
+body {
+  margin: 0 !important;
+  font-family: "Work Sans", sans-serif !important;
+  background-color: #f9fafb !important;
+  color: #212529 !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Bootstrap Overrides */
+.btn-primary {
+  background-color: #4f46e5 !important;
+  border-color: #4f46e5 !important;
+}
+
+.btn-primary:hover {
+  background-color: #4338ca !important;
+  border-color: #4338ca !important;
+}
+
+.btn-success {
+  background-color: #16a34a !important;
+  border-color: #16a34a !important;
+}
+
+.btn-success:hover {
+  background-color: #15803d !important;
+  border-color: #15803d !important;
+}
+
+.btn-warning {
+  background-color: #f59e0b !important;
+  border-color: #f59e0b !important;
+  color: #fff !important;
+}
+
+.btn-warning:hover {
+  background-color: #d97706 !important;
+  border-color: #d97706 !important;
+}
+
+.btn-outline-secondary {
+  border-color: #6b7280 !important;
+  color: #6b7280 !important;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6b7280 !important;
+  color: #fff !important;
+}
+
+.btn {
+  border-radius: 0.75rem !important;
+}
+
+.card {
+  border-radius: 0.75rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Form Styling */
+form textarea,
+form input,
+form select {
+  border-radius: 0.5rem !important;
+  border: 1px solid #d1d5db !important;
+  font-size: 0.95rem !important;
+}
+
+form label {
+  font-weight: 600 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* JSON VIEWER CUSTOM STYLING */
+.json-viewer {
+  font-family: "Source Code Pro", monospace !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  padding: 1rem !important;
+  background-color: #f1f5f9 !important;
+  border-radius: 0.5rem !important;
+  border: 1px solid #e5e7eb !important;
+  overflow-x: auto !important;
+  color: #1e293b !important;
+}
+
+.json-viewer .json-key {
+  color: #0ea5e9; /* Sky blue */
+  font-weight: 600 !important;
+}
+
+.json-viewer .json-value-string {
+  color: #ec4899; /* Pink */
+}
+
+.json-viewer .json-value-number {
+  color: #10b981; /* Emerald */
+}
+
+.json-viewer .json-value-boolean {
+  color: #8b5cf6; /* Violet */
+  font-weight: bold !important;
+}
+
+.json-viewer .json-value-null {
+  color: #f43f5e; /* Rose */
+  font-style: italic !important;
+}
+
+/* Headings */
+h2 {
+  font-weight: 700 !important;
+  font-size: 1.75rem !important;
+  color: #111827 !important;
+}
+
+/* Extra utility */
+.mt-2 {
+  margin-top: 0.5rem !important;
+}
+
+.mt-3 {
+  margin-top: 1rem !important;
+}
+
+.mt-4 {
+  margin-top: 1.5rem !important;
+}
+
+.gap-2 {
+  gap: 0.5rem !important;
+}
+
+.flex-wrap {
+  flex-wrap: wrap !important;
+}
