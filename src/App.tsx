@@ -8,6 +8,7 @@ import {
   Button,
   ButtonGroup,
   Card,
+  Modal,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,6 +17,8 @@ import {
   faCompressAlt,
   faUndo,
   faRedo,
+  faSortAlphaDown,
+  faSortAlphaUp,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   saveJson,
@@ -25,11 +28,31 @@ import {
 } from "./utils/localStorageUtils";
 import MainBrandLogo from "./components/MainBrandLogo";
 
+const ErrorModal: React.FC<{
+  show: boolean;
+  message: string | null;
+  onHide: () => void;
+}> = ({ show, message, onHide }) => {
+  return (
+    <Modal show={show} onHide={onHide} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Error</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>{message || "An error occurred."}</Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={onHide}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
+
 const App: React.FC = () => {
   const [jsonInput, setJsonInput] = useState("");
   const [jsonOutput, setJsonOutput] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [history, setHistory] = useState<string[]>([]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
   const [saves, setSaves] = useState<SavedJson[]>([]);
@@ -54,6 +77,7 @@ const App: React.FC = () => {
       setError(null);
     } catch (err: any) {
       setError(`❌ Failed to fetch JSON from URL: ${err.message}`);
+      setShowErrorModal(true);
     }
   }, []);
 
@@ -72,6 +96,7 @@ const App: React.FC = () => {
           setError(null);
         } catch (err: any) {
           setError(`❌ Failed to read JSON file: ${err.message}`);
+          setShowErrorModal(true);
         }
         // Reset file input
         if (fileInputRef.current) {
@@ -82,6 +107,62 @@ const App: React.FC = () => {
     },
     []
   );
+
+  const sortJson = (
+    obj: any,
+    by: "key" | "value",
+    order: "asc" | "desc"
+  ): any => {
+    if (Array.isArray(obj)) {
+      return obj.map((item) => sortJson(item, by, order));
+    }
+    if (typeof obj !== "object" || obj === null) {
+      return obj;
+    }
+    const sortedKeys = Object.keys(obj).sort((a, b) => {
+      if (by === "key") {
+        return order === "asc" ? a.localeCompare(b) : b.localeCompare(a);
+      } else {
+        const valA =
+          typeof obj[a] === "object" ? JSON.stringify(obj[a]) : obj[a];
+        const valB =
+          typeof obj[b] === "object" ? JSON.stringify(obj[b]) : obj[b];
+        return order === "asc"
+          ? String(valA).localeCompare(String(valB))
+          : String(valB).localeCompare(String(valA));
+      }
+    });
+    return sortedKeys.reduce((acc, key) => {
+      acc[key] = sortJson(obj[key], by, order);
+      return acc;
+    }, {} as any);
+  };
+
+  const handleSortByKey = (order: "asc" | "desc") => {
+    try {
+      const parsed = JSON.parse(jsonInput);
+      const sorted = sortJson(parsed, "key", order);
+      const pretty = JSON.stringify(sorted, null, 2);
+      setJsonInput(pretty);
+      setError(null);
+    } catch (e) {
+      setError("❌ Invalid JSON");
+      setShowErrorModal(true);
+    }
+  };
+
+  const handleSortByValue = (order: "asc" | "desc") => {
+    try {
+      const parsed = JSON.parse(jsonInput);
+      const sorted = sortJson(parsed, "value", order);
+      const pretty = JSON.stringify(sorted, null, 2);
+      setJsonInput(pretty);
+      setError(null);
+    } catch (e) {
+      setError("❌ Invalid JSON");
+      setShowErrorModal(true);
+    }
+  };
 
   useEffect(() => {
     setSaves(getSavedJsonList());
@@ -124,6 +205,7 @@ const App: React.FC = () => {
       setError(null);
     } catch (e) {
       setError("❌ Invalid JSON");
+      setShowErrorModal(true);
       setJsonOutput(null);
     }
   };
@@ -136,6 +218,7 @@ const App: React.FC = () => {
       setError(null);
     } catch (e) {
       setError("❌ Invalid JSON");
+      setShowErrorModal(true);
     }
   };
 
@@ -147,6 +230,7 @@ const App: React.FC = () => {
       setError(null);
     } catch (e) {
       setError("❌ Invalid JSON");
+      setShowErrorModal(true);
     }
   };
 
@@ -161,11 +245,22 @@ const App: React.FC = () => {
       setError(null);
     } catch (e: any) {
       setError("❌ Failed to merge. One of the JSONs is invalid.");
+      setShowErrorModal(true);
     }
   };
 
   const handleValidateSchema = () => {
     try {
+      if (!jsonInput) {
+        setError("❌ JSON input is empty");
+        setShowErrorModal(true);
+        return;
+      }
+      if (!jsonSchema) {
+        setError("❌ JSON schema is empty");
+        setShowErrorModal(true);
+        return;
+      }
       const schema = JSON.parse(jsonSchema);
       const data = JSON.parse(jsonInput);
       const ajv = new Ajv({ allErrors: true });
@@ -179,13 +274,30 @@ const App: React.FC = () => {
           .join("\n");
         setValidationMessage(`❌ Validation errors:\n${errors}`);
       }
+      setError(null);
     } catch (err: any) {
-      setValidationMessage("❌ Invalid JSON or Schema");
+      let errorMessage = "❌ Invalid JSON or Schema";
+      if (err instanceof SyntaxError) {
+        if (err.message.includes("jsonSchema")) {
+          errorMessage = `❌ Invalid JSON Schema: ${err.message}`;
+        } else if (err.message.includes("jsonInput")) {
+          errorMessage = `❌ Invalid JSON Input: ${err.message}`;
+        } else {
+          errorMessage = `❌ Parsing Error: ${err.message}`;
+        }
+      }
+      setError(errorMessage);
+      setShowErrorModal(true);
+      setValidationMessage(null);
     }
   };
 
   const handleExportJson = () => {
-    if (!jsonInput) return;
+    if (!jsonInput) {
+      setError("❌ JSON input is empty — cannot export.");
+      setShowErrorModal(true);
+      return;
+    }
 
     try {
       const parsed = JSON.parse(jsonInput); // ensure valid
@@ -198,8 +310,10 @@ const App: React.FC = () => {
       link.download = "exported.json";
       link.click();
       URL.revokeObjectURL(url);
+      setError(null);
     } catch (e) {
       setError("❌ Invalid JSON — cannot export.");
+      setShowErrorModal(true);
     }
   };
 
@@ -256,6 +370,34 @@ const App: React.FC = () => {
               >
                 <FontAwesomeIcon icon={faRedo} className="me-2" />
                 Redo
+              </Button>
+              <Button
+                variant="outline-info"
+                onClick={() => handleSortByKey("asc")}
+              >
+                <FontAwesomeIcon icon={faSortAlphaDown} className="me-2" />
+                Sort Keys Asc
+              </Button>
+              <Button
+                variant="outline-info"
+                onClick={() => handleSortByKey("desc")}
+              >
+                <FontAwesomeIcon icon={faSortAlphaUp} className="me-2" />
+                Sort Keys Desc
+              </Button>
+              <Button
+                variant="outline-info"
+                onClick={() => handleSortByValue("asc")}
+              >
+                <FontAwesomeIcon icon={faSortAlphaDown} className="me-2" />
+                Sort Values Asc
+              </Button>
+              <Button
+                variant="outline-info"
+                onClick={() => handleSortByValue("desc")}
+              >
+                <FontAwesomeIcon icon={faSortAlphaUp} className="me-2" />
+                Sort Values Desc
               </Button>
               <Button variant="outline-secondary" onClick={handleExportJson}>
                 Export to .json
@@ -398,7 +540,6 @@ const App: React.FC = () => {
                 </Col>
               </Row>
             </Form>
-            {error && <div className="mt-2 text-danger">{error}</div>}
           </Col>
 
           <Col md={6}>
@@ -415,6 +556,14 @@ const App: React.FC = () => {
           </Col>
         </Row>
       </Container>
+      <ErrorModal
+        show={showErrorModal}
+        message={error}
+        onHide={() => {
+          setShowErrorModal(false);
+          setError(null);
+        }}
+      />
     </>
   );
 };
