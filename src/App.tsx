@@ -252,13 +252,11 @@ const App: React.FC = () => {
   const handleValidateSchema = () => {
     try {
       if (!jsonInput) {
-        setError("❌ JSON input is empty");
-        setShowErrorModal(true);
+        setValidationMessage("❌ JSON input is empty");
         return;
       }
       if (!jsonSchema) {
-        setError("❌ JSON schema is empty");
-        setShowErrorModal(true);
+        setValidationMessage("❌ JSON schema is empty");
         return;
       }
       const schema = JSON.parse(jsonSchema);
@@ -286,9 +284,7 @@ const App: React.FC = () => {
           errorMessage = `❌ Parsing Error: ${err.message}`;
         }
       }
-      setError(errorMessage);
-      setShowErrorModal(true);
-      setValidationMessage(null);
+      setValidationMessage(errorMessage);
     }
   };
 

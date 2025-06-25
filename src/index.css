@@ -61,6 +61,14 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
 }
 
+.modal-header {
+  border-bottom: none !important;
+}
+
+.modal-footer {
+  border-top: none !important;
+}
+
 /* Form Styling */
 form textarea,
 form input,
