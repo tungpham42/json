@@ -401,6 +401,51 @@ const App: React.FC = () => {
             </ButtonGroup>
             <Form className="mt-4">
               <Form.Label>
+                <strong>📂 Upload JSON File</strong>
+              </Form.Label>
+              <Row className="g-2 align-items-center">
+                <Col xs={8}>
+                  <Form.Control
+                    type="file"
+                    ref={fileInputRef}
+                    accept=".json"
+                    onChange={handleFileUpload}
+                  />
+                </Col>
+                <Col xs={4}>
+                  <Button
+                    variant="outline-primary"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    Upload
+                  </Button>
+                </Col>
+              </Row>
+            </Form>
+            <Form className="mt-4">
+              <Form.Label>
+                <strong>🌐 Import JSON from URL</strong>
+              </Form.Label>
+              <Row className="g-2 align-items-center">
+                <Col xs={8}>
+                  <Form.Control
+                    type="text"
+                    ref={urlInputRef}
+                    placeholder="Enter JSON URL (e.g. https://api.example.com/data)"
+                  />
+                </Col>
+                <Col xs={4}>
+                  <Button
+                    variant="outline-primary"
+                    onClick={handleImportFromURL}
+                  >
+                    Import
+                  </Button>
+                </Col>
+              </Row>
+            </Form>
+            <Form className="mt-4">
+              <Form.Label>
                 <strong>🧪 JSON Schema Validator</strong>
               </Form.Label>
               <Form.Control
@@ -490,51 +535,6 @@ const App: React.FC = () => {
                   </option>
                 ))}
               </Form.Select>
-            </Form>
-            <Form className="mt-4">
-              <Form.Label>
-                <strong>📂 Upload JSON File</strong>
-              </Form.Label>
-              <Row className="g-2 align-items-center">
-                <Col xs={8}>
-                  <Form.Control
-                    type="file"
-                    ref={fileInputRef}
-                    accept=".json"
-                    onChange={handleFileUpload}
-                  />
-                </Col>
-                <Col xs={4}>
-                  <Button
-                    variant="outline-primary"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    Upload
-                  </Button>
-                </Col>
-              </Row>
-            </Form>
-            <Form className="mt-4">
-              <Form.Label>
-                <strong>🌐 Import JSON from URL</strong>
-              </Form.Label>
-              <Row className="g-2 align-items-center">
-                <Col xs={8}>
-                  <Form.Control
-                    type="text"
-                    ref={urlInputRef}
-                    placeholder="Enter JSON URL (e.g. https://api.example.com/data)"
-                  />
-                </Col>
-                <Col xs={4}>
-                  <Button
-                    variant="outline-primary"
-                    onClick={handleImportFromURL}
-                  >
-                    Import
-                  </Button>
-                </Col>
-              </Row>
             </Form>
           </Col>
 
