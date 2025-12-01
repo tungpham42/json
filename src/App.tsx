@@ -321,10 +321,10 @@ const App: React.FC = () => {
         dismissible={false}
         altText="Logo Soft"
       />
-      <Container className="py-4">
+      <Container className="py-4 mt-5">
         <h1 className="mb-4 text-center">🧰 JSON Tool</h1>
         <Row>
-          <Col md={6}>
+          <Col md={8}>
             <Form.Group controlId="jsonInput">
               <Form.Label>
                 <strong>JSON Input</strong>
@@ -538,7 +538,7 @@ const App: React.FC = () => {
             </Form>
           </Col>
 
-          <Col md={6}>
+          <Col md={4}>
             <Form.Label>
               <strong>Output</strong>
             </Form.Label>
